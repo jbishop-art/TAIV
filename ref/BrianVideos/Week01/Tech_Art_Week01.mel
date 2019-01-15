@@ -1,0 +1,134 @@
+
+//Cube Stuff polyCube command
+
+polyCube;
+
+// edit cube width
+polyCube -e -w 2 "pCube1";
+//query cube width
+polyCube -q -w "pCube1";
+
+//Create float from queried width
+float $pcubeW = `polyCube -q -w "pCube1"`;
+print $pcubeW
+
+//Create string from queried width
+string $pcubeWstr = `polyCube -q -w "pCube1"`;
+print $pcubeWstr
+
+//Edit Height using queried width
+polyCube -e -h $pcubeWstr "pCube1";
+
+
+//Poly cube String stuff - To show that objects have different nodes - not necessarily needed for assingment
+polyCube;
+
+//Use polyCube command to create string array - Transform Node and Shape node
+string $cb[] = `polyCube`;
+print $cb;
+
+//Renames actual cube
+rename $cb[0] "cbTran";
+rename $cb[1] "cbShape";
+print $cb;
+
+// Sets value of Array Elements to the following strings
+$cb[0] = "cbTran";
+$cb[1] = "cbShape";
+print $cb;
+
+//Renames both array and cube
+$cb[0] = `rename $cb[0] "cbTran2"`;
+print $cb;
+$cb[1] = `rename $cb[1] "cbShape2"`;
+print $cb;
+
+
+
+// Make some cubes for loop
+int $i;
+for( $i=0; $i < 5 ; $i++ )
+    {
+        polyCube ;
+    }
+
+
+//ls command "capture" string array out of selection
+string $cubes[] = `ls -sl`;
+print $cubes;
+
+
+int $i;
+for( $i=0; $i < size($cubes) ; $i++ )
+    {
+        move 0 ($i *2) 0 $cubes[$i] ;
+    }
+
+//parent cubes    
+int $i;
+for( $i=1; $i < size($cubes) ; $i++ )
+	{
+	parent $cubes[$i] $cubes[$i-1];
+	}
+
+//creating group nodes using the group command
+//You can use the xform command to place and query transforms - here they are just set at the origin	
+int $i;
+for( $i=0; $i < size($cubes) ; $i++ )
+	{
+	group -n ($cubes[$i] +"_Grp") -em; xform -os -piv 0 0 0; 
+	orientConstraint -offset 0 0 0 -weight 1 $cubes[$i] ($cubes[$i] +"_Grp");
+	pointConstraint -offset 0 0 0 -weight 1 $cubes[$i] ($cubes[$i] +"_Grp");
+	delete ($cubes[$i] +"_Grp_orientConstraint1") ($cubes[$i] +"_Grp_pointConstraint1");
+	}
+	
+//Set attributes for cubes 
+
+//parent cubes    
+int $i;
+for( $i=1; $i < size($cubes) ; $i++ )
+	{
+	setAttr -lock true -keyable false ($cubes[$i] +".sx");
+	setAttr -lock true -keyable false ($cubes[$i] +".sy");
+	setAttr -lock true -keyable false ($cubes[$i] +".sz");
+	}
+
+	
+//Mel Make Joint Chain - Delete existing joint chain using "objExists"
+if (`objExists joint1`)
+{
+delete joint1;
+}
+
+JointTool;
+select -d;
+joint -p 0 17 0 ;
+joint -p 0 9 3 ;
+joint -e -zso -oj xyz -sao yup joint1;
+joint -p 0 2 0 ;
+joint -e -zso -oj xyz -sao yup joint2;
+joint -p 0 0 4 ;
+joint -e -zso -oj xyz -sao yup joint3;
+joint -p 0 0 7 ;
+joint -e -zso -oj xyz -sao yup joint4;
+SnapToGridRelease; dR_enterForSnap;
+select -cl;
+escapeCurrentTool;
+
+
+//Mel Joint Stuff
+getAttr joint1.tx;
+float $jXtran = (`getAttr joint2.tx`); 
+print $jXtran;
+float $jRad = ($jXtran/3.0); 
+print $jRad
+
+//mel controller Stuff circle command
+circle -n ("joint1" + "_Ctl") -nr 1 0 0 -r $jRad;
+circle -n ("joint1" + "_Ctl") -nr 1 0 0 -r $jRad -c 0 0 -2;
+
+//mel eval stuff
+string $thing = "circle -n niftyControl -nr 0 1 0";
+eval $thing -r $jRad;
+
+

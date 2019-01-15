@@ -1,0 +1,27 @@
+
+
+//LockNhide 
+//Locks and hides scale and rotation channels on selected joints
+
+global proc lockNhide ()
+{
+string $jointsList[] = `ls -sl`;
+print $jointsList;
+
+int $i;
+for( $i=0; $i < size($jointsList) ; $i++ )
+	{
+	// Locks out translation and scale channels on selected joints
+	
+	setAttr -lock true -keyable false ($jointsList[$i] +".tx");
+	setAttr -lock true -keyable false ($jointsList[$i] +".ty");
+	setAttr -lock true -keyable false ($jointsList[$i] +".tz");
+	setAttr -lock true -keyable false ($jointsList[$i] +".sx");
+	setAttr -lock true -keyable false ($jointsList[$i] +".sy");
+	setAttr -lock true -keyable false ($jointsList[$i] +".sz");
+	
+	//Sets Default manipulator handle to "rotate" ("t" Key)
+
+	setAttr (($jointsList[$i]) + ".showManipDefault") 2;
+	}
+}
