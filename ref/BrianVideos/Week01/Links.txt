@@ -1,0 +1,8 @@
+Technical Documentation:
+--Mel--
+http://help.autodesk.com/view/MAYAUL/2018/ENU/?guid=__Commands_index_html
+
+--Python--
+http://help.autodesk.com/view/MAYAUL/2018/ENU/?guid=__CommandsPython_index_html
+
+**********************************************************************************

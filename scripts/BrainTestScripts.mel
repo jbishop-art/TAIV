@@ -1,0 +1,43 @@
+//Cube create.
+polyCube;
+
+//change the Cube width of 2 units with the name of "pCube1".
+polyCube -e -w 2 "pCube1";
+
+//query cube width with the name of "pCube1".
+polyCube -q -w "pCube1";
+
+//Creat float from queried width of cube with name "pCube1".
+float $pcubeW = `polyCube -q -w "pCube1"`;
+print $pcubeW
+
+//Create string from queried width of cube with name "pCube1".
+string $pcubeWstr = `polyCube -q -w "pCube1"`;
+
+//Edit Height using queried width of a cube with name "pCube1".
+polyCube -e -h $pcubeWstr "pCube1";
+
+//Create a cube and store the name into a list called "$cb".  Then print that list.
+string $cb[] = `polyCube`;
+print $cb;
+
+//Renames actual cube, not in the string though.  Then print list.
+rename $cb[0] "cbTran";
+rename $cb[1] "cbShape";
+print $cb;
+
+//Sets value of Array Elements to the following strings.  Then print list.
+$cb[0] = "cbTran";
+$cb[1] = "cbShape";
+print $cb;
+
+//Rename the cube and change the element in the array.  Then print.
+$cb[0] = `rename $cb[0] "cbTran2"`;
+print $cb;
+$cb[1] = `rename $cb[1] "cbShape2"`;
+print $cb;
+
+
+
+
+
