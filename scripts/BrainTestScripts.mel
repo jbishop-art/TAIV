@@ -37,7 +37,86 @@ print $cb;
 $cb[1] = `rename $cb[1] "cbShape2"`;
 print $cb;
 
+//Make some cubes for loop, 5 of them.
+int $i;
+for( $i=0; $i < 5; $i++ )
+    {
+        polyCube ;
+    }
+    
+//ls command "capture" string array out of selection.  creates a list based on selection.
+//then move those cubes 2 units apart.
+string $cubes[] = `ls -sl`;
+print $cubes;
 
+int $i;
+for( $i=0; $i < size($cubes) ; $i++ )
+    {
+        move 0 ($i *2) 0 $cubes[$i];
+    }
+    
+//parent cubes    
+int $i;
+for( $i=1; $i < size($cubes) ; $i++ )
+    {
+        parent $cubes[$i] $cubes[$i-1];
+    }
+    
+//creating group nodes using the group command
+//You can use the xform command to place and query transform - ???
+int $i;
+for ( $i=0; $i < size($cubes) ; $i++ )
+    {
+        group -n ($cubes[$i] + "_Grp") -em; xform -os -piv 0 0 0;
+        orientConstraint -offset 0 0 0 -weight 1 $cubes[$i] ($cubes[$i] + "_Grp");
+        pointConstraint -offset 0 0 0 -weight 1 $cubes[$i] ($cubes[$i] + "_Grp");
+        delete ($cubes[$i] + "_Grp_orientConstraint1") ($cubes[$i] + "_Grp_pointConstraint1");
+    }
+
+//Set attributes for cubes.
+//lock scale on cubes.
+int $i;
+for ( $i=1; $i < size($cubes) ; $i++ )
+    {
+        setAttr -lock true -keyable false ($cubes[$i] + ".sx");
+        setAttr -lock true -keyable false ($cubes[$i] + ".sy");
+        setAttr -lock true -keyable false ($cubes[$i] + ".sz");
+    }
+
+//Mel Make joint Chain - Delete existing joint chain using "objExists"
+if (`objExists joint1`)
+    {
+        delete joint1;
+    }
+    
+//Create Joint chain.
+JointTool;   
+joint -p 0.0169639 7.961035 0 ;
+joint -p -1.954076 4.03828 0 ;
+joint -e -zso -oj xyz -sao yup joint1;
+joint -p 0.0169639 1.178341 0 ;
+joint -e -zso -oj xyz -sao yup joint2;
+joint -p -1.722189 -0.0197423 0 ;
+joint -e -zso -oj xyz -sao yup joint3;
+joint -p -3.152158 -0.0197423 0 ;
+joint -e -zso -oj xyz -sao yup joint4;
+escapeCurrentTool; 
+select -cl ;
+    
+//Mel Joint Stuff.  Grab distance between two joints.
+getAttr joint1.tx;
+float $jXtran = (`getAttr joint2.tx`);
+print $jXtran;
+float $jRad = ($jXtran/3.0);
+print $jRad
+
+//Mel controller Stuff circle command.  Create circle.
+circle -n ("join1" + "_Ctrl") -nr 1 0 0 -r $jRad;
+circle -n ("join1" + "_Ctrl") -nr 1 0 0 -r $jRad -c 0 0-1;   //offset circle's center.
+
+//Mel eval stuff
+string $thing = "circle";
+eval $thing -r $jRad;
 
 
 
